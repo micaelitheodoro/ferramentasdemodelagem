@@ -1,0 +1,87 @@
+---
+title: "Git"
+author: "Thomas N Vilches"
+output:
+  html_document:
+    geometry: "a4paper"
+---
+
+```{r, echo = FALSE}
+library(fontawesome)
+library(iconr)
+```
+
+
+## O que é Git?
+
+- É um software de versionamento de códigos que permite o usuário manter um histórico de todas as modificações feitas e colaborar com outros indivíduos.
+
+
+- Desenvolvido por Linus Torvalds em 2005.
+
+```{r, echo = FALSE, out.width="10%", fig.align='center'}
+knitr::include_graphics("https://cdn.britannica.com/99/124299-050-4B4D509F/Linus-Torvalds-2012.jpg")
+knitr::include_graphics("https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Tux.svg/800px-Tux.svg.png")
+```
+
+- Git pode ser instalado em qualquer sistema operacional, seja ele Windows, Linux, ou Mac.
+
+## Instalação
+
+
+<!-- ```{r, results='asis'} -->
+<!-- library(fontawesome) -->
+<!-- cat(paste0("- Vá para o site do [", icon("git"), " Git.](https://git-scm.com/)")) -->
+<!-- ``` -->
+
+- Vá para o site do [`r fa("git-alt")` Git.](https://git-scm.com/) e faça o download.
+
+- Instale o arquivo.
+
+> `r fa("warning")` Usuários Linux e Mac podem achar mais fácil fazer isso por linha de comando. Como ```sudo apt install git```
+
+
+## Github `r fa("github")`
+
+- Vá para o site do [`r fa("github")` Github.](https://github.com/)
+
+- Crie uma conta.
+
+## Configuração
+
+- Abra o Git Bash e use os seguintes comandos:
+
+    * ```git config --global user.name "SEUNOMEAQUI"``` $\rightarrow$ Deve ser o mesmo que usou na conta Github
+    * ```git config --global user.email "SEUEMAILAQUI"``` $\rightarrow$ Deve ser o mesmo que usou na conta Github
+    
+- Vamos agora criar uma chave SSH pública para seu uso:
+
+    * digite o comando ```ssh-keygen -t rsa -b 4096 -C "your_email@example.com"```
+    * digite o comando ```eval $(ssh-agent -s)```
+    * digite o comando ```ssh-add ~/.ssh/id_rsa```
+    
+- Copie o conteúdo do arquivo "id_rsa".
+
+- Logado em sua conta do Github:
+
+    * Clique o ícone no __canto superior direito com seu avatar__[(clique aqui para referência)](figs/githubinit.png)
+    * Clique em "configurações" ou "settings" 
+    * Clique em SSH and GPG keys [(clique aqui para referência)](figs/gitssh.png)
+    * Clique no botão de "new SSH key" ou sua possível tradução.
+    * Cole o conteúdo da chave pública na caixa "Key".
+    
+- Mais sobre chaves SSH [aqui](https://dev.to/dxwebster/como-conectar-ao-github-com-chaves-ssh-1i41).
+
+## Trabalhando com Git localmente
+
+
+- ```git init```
+
+- ```git add```
+
+- ```git commit -m "mensagem"```
+
+- ```git status```
+
+- ```git log```
+
