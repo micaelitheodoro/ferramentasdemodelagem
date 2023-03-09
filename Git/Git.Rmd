@@ -85,3 +85,22 @@ knitr::include_graphics("https://upload.wikimedia.org/wikipedia/commons/thumb/3/
 
 - ```git log```
 
+- ```git branch```
+
+- ```git checkout```
+
+- ```git reset```
+
+- ```git revert```
+
+- ```git merge```
+
+> `r fontawesome::fa("triangle-exclamation", fill = "orange")` Lugar legal para aprender [Oh my Git!](https://learngitbranching.js.org/?locale=pt_BR)
+
+
+
+## Trabalhando com Git remotamente
+
+- ```git push```
+
+- ```git pull``` (equivalente a ```git fetch```+```git merge FETCH_HEAD```)
