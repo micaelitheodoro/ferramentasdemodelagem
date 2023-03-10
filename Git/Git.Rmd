@@ -60,7 +60,7 @@ knitr::include_graphics("https://upload.wikimedia.org/wikipedia/commons/thumb/3/
     * digite o comando ```eval $(ssh-agent -s)```
     * digite o comando ```ssh-add ~/.ssh/id_rsa```
     
-- Copie o conteúdo do arquivo "id_rsa".
+- Copie o conteúdo do arquivo "id_rsa.pub" (abrir com bloco de notas).
 
 - Logado em sua conta do Github:
 
