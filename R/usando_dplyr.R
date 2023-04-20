@@ -56,16 +56,51 @@ df_fogo_e_agua <- dados %>% filter(type == "fire" | type == "water")
 dados %>% filter(grepl("fly", name))
 
 #TODO Vamos filtrar todos os pokemons que tem  "bee" ou "saur"
+dados %>% filter(grepl("bee", name) | grepl("saur", name))
+dados %>% filter(grepl("bee|saur", name))
+dados %>% head
+
+#? REGEX
+
+vetor = c("banana", "Banana", "maça")
+grepl("[Bb]anana", vetor)
+grep("[Bb]anana", vetor)
+vetor = c("2023/04/01", "Banana", "maça")
+grepl("[A-Z]*", vetor)
 
 
+
+#! errado
+dados %>% filter((name == "bee" | name == "saur"))
+filter(dados, name == "bee" | name =="saur")
+
+#* FUNCIONA
+dados[str_detect(dados$name, "bee|saur"),]
+
+names(dados)
 
 #? A função pull devolve um vetor
-dados %>% pull(name)
+dados %>%
+    filter(type == "fire") %>%
+    pull(secundary.type) %>%
+    unique
+
+dados2 <- dados[dados$type == "fire",]
+unique(dados2$secundary.type)
+
+unique(dados[dados$type == "fire",]$secundary.type)
+
+
+dados %>% select(type) %>% unique
+dados %>% select(type, secundary.type)
+dados %>% select(type, secundary.type) %>% unique
 
 #? A função select seleciona colunas
 dados %>% select(c(1, 2, 3)) #? pelo número
-dados %>% select(name, type, height) #? pelo nome
+df <- dados %>% select(name, type, height) #? pelo nome
 
+df <- dados %>%select(height, weight, hp) %>% as.matrix()
+df
 #TODO achar todas as combinações existentes de type e secondary.type
 
 #? Outras possibilidades
@@ -76,12 +111,17 @@ dados %>%
 dados %>% select(-name) %>% head #? negativo exclui as colunas
 
 #? A função mutate modifica ou cria uma coluna com base em outras
+df <- mutate(dados, height2 = 2*height) %>% head
+nrow(df)
 
-dados %>% 
+dados <- dados %>% 
     mutate(
-        height2 = 2*height
+        height2 = 2*height,
+        speed2 = 2*speed,
+        bee = grepl("bee", name)
     )
 
+dados %>% head
 #? A função arrange organiza o data frame com base em colunas
 
 dados %>%
@@ -95,6 +135,22 @@ dados %>%
 dados %>%
     arrange(desc(name)) %>%
         tail()
+
+dados %>%
+    arrange(desc(name)) %>%
+        head()
+
+dados %>%
+    arrange(desc(name), height) %>%
+        head()
+
+df <- data.frame(
+        nome = c("maria", "zé", "joão", "maria"),
+        altura = c(2, 3, 4, 1)
+    )
+
+df %>%
+    arrange(nome, altura)
 
 #? Vamos fazer algumas contas!!
 
@@ -114,10 +170,51 @@ dados %>%
         ) %>%
             arrange(media_altura)
 
-#TODO Filtrar os pokemons que tem o peso acima da média do seu type
+#TODO Filtrar os pokemons que tem o peso acima da média da altura do seu type
+dados %>%
+    group_by(type) %>%
+    mutate(
+        media_altura = mean(height)
+    )  -> df 
 
-#TODO criar uma coluna com a transformação Z-score POR type utilizando TODAS
-#TODO as variáveis quantitativas
+    write.csv(df, "df.csv")
+    xlsx::write.xlsx(df, "df.csv")
+
+dados %>%
+    group_by(type) %>%
+    mutate(
+        media_altura = mean(height),
+        media_peso = mean(weight)
+    ) %>%
+    filter(height > media_altura, weight > media_peso) %>%
+    select(-media_altura) %>%
+    ungroup() %>%
+    mutate(
+        imc = weight/height^2,
+        mm = sum(weight) #! Não funciona
+    )-> df 
+
+dados %>%
+    group_by(type) %>%
+    mutate(
+        media_altura = mean(height),
+        media_peso = mean(weight)
+    ) %>%
+    filter(height > media_altura, weight > media_peso) %>%
+    select(-media_altura) %>%
+    ungroup() %>%
+    rowise() %>%
+    mutate(
+        imc = weight/height^2,
+        mm = sum(weight) #* Funciona
+    )-> df 
+
+    write.csv(df, "df.csv")
+
+#TODO Lição
+#TODO criar uma coluna com a transformação Z-score para altura POR type utilizando TODAS
+
+
 
 #? Renomear colunas
 dados %>%
@@ -189,6 +286,13 @@ dados %>%
 
 #* O código abaixo funciona
 #TODO
+dados %>%
+rowwise() %>%
+    mutate(
+        nova_var = f(height)
+    ) %>%
+        select(height, nova_var) %>% head(30)
+
 
 #? ifelse e case_when
 
