@@ -49,14 +49,44 @@ filter(dados, type == "fire"|type =="water")
 #TODO Vamos filtrar todos os pokemons que tem  "fly"
 filter(dados,secundary.type == "flying")
 #TODO Vamos filtrar todos os pokemons que tem  "bee" ou "saur"
-filter(dados,names == "bee"|names=="saur")
+#filter(dados,names == "bee"|names=="saur")
 texto_filtrado <- dados[str_detect(dados$name, "bee|saur"),]
 
 # Imprimir o resultado
 texto_filtrado
+dados%>% filter(grepl("bee",name)|grepl("saur",name)) 
+mutate(dados,height2=2*height)
 
+dados<-dados%>%
+  mutate(
+    height2=2*height,
+    speed2=2*speed)
 #? A função pull devolve um vetor
+dados
 dados %>% pull(name)
+dados%>%
+  group_by(type,secundary.type)%>%
+  summarise(
+    media_altura=mean(height),
+    media_peso=mean(weight),
+    N=n()
+  )%>%arrange(media_altura,media_peso)
+dados%>%
+  group_by(type)%>%
+  mutate(
+    media_altura=mean(height)
+  )->df
+write.csv(df,"df.csv")
+dados%>%
+  group_by(type)%>%
+  mutate(
+    media_altura=mean(height)
+  )%>%
+  filter(height>media_altura)%>%
+select(-media_altura)->df
+write.csv(df,"df.csv")
+
+
 
 #? A função select seleciona colunas
 dados %>% select(c(1, 2, 3)) #? pelo número
@@ -114,6 +144,14 @@ dados %>%
 
 #TODO criar uma coluna com a transformação Z-score POR type utilizando TODAS
 #TODO as variáveis quantitativas
+
+#Tarefa para 27/04/2023
+dados %>%
+  group_by(type) %>%
+  mutate(across(where(is.numeric), scale))
+
+dados
+
 
 #? Renomear colunas
 dados %>%
