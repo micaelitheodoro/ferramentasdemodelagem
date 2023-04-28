@@ -148,10 +148,16 @@ dados %>%
 #Tarefa para 27/04/2023
 dados %>%
   group_by(type) %>%
-  mutate(across(where(is.numeric), scale))
-
-dados
-
+  mutate(scale(height))%>%
+View
+#Usando a função zscore direto
+dados %>% 
+  group_by(type) %>% 
+  mutate(across(where(is.numeric)),
+    Zscore = 
+      (height - mean(height)) / sd(height)) %>% 
+  View
+  
 
 #? Renomear colunas
 dados %>%
