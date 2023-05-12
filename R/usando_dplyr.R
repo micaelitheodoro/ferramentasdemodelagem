@@ -213,7 +213,21 @@ dados %>%
 
 #TODO Lição
 #TODO criar uma coluna com a transformação Z-score para altura POR type utilizando TODAS
+    
+df <-   dados %>%
+    group_by(type) %>%
+    mutate(
+      z_height = (height-mean(height))/sd(height),
+      z_weight = (weight-mean(weight))/sd(weight)
+    )
 
+library(ggplot2)
+
+dados %>% pull(type) %>% unique
+
+ggplot(df)+
+  geom_density(aes(x = z_height, color = type))+
+  theme_bw()
 
 
 #? Renomear colunas
@@ -277,6 +291,9 @@ f <- function(x){
     }
 }
 
+x1 <- c(30, 16, 20, 3)
+f(x1)
+
 #! O código abaixo não funciona
 dados %>%
     mutate(
@@ -305,6 +322,39 @@ dados %>%
         )
     ) %>% head
 
+ff <- function(y){
+  resposta <- c()
+  
+  for(i in 1:length(y)){
+    if(y[i] <= 15){ #? no caso, o valor é 300
+      resposta[i] <- "baixinho"
+    }else{
+      
+      resposta[i] <- "altão"
+    }
+  }
+  
+  return(resposta)
+}
+
+ff(x1)
+x1
+
+dados %>%
+  mutate(
+    tamanho = ff(height)
+  ) %>% head
+
+# 
+# ifelse(
+#   height < 5,
+#   "baixinho",
+#   ifelse(
+#     height < 10, 
+#     ...
+#   )
+# )
+
 dados %>%
     mutate(
         tamanho = case_when(
@@ -314,6 +364,28 @@ dados %>%
             TRUE ~ "altão"
         )
     ) %>% head
+
+
+dados %>%
+  mutate(
+    tamanho = case_when(
+      height < 5 ~ "baixinho",
+      height < 10 ~ "pequeno",
+      height < 15 ~ "médio",
+      TRUE ~ "altão"
+    )
+  ) %>% head
+
+
+# ERRADO!!!
+dados %>%
+  mutate(
+    tamanho = case_when(
+      height < 5 ~ "baixinho",
+      height < 10 ~ "pequeno",
+      height < 15 ~ "médio"
+    )
+  ) %>% head(15)
 
 #? Alguns perrengues da vida
 
@@ -331,6 +403,48 @@ dados %>%
 #* O código abaixo conserta isso
 #TODO
 
+dados %>%
+  mutate(
+    tamanho = case_when(
+      height < 5 ~ "baixinho",
+      height < 10 ~ "pequeno",
+      height < 15 ~ NA_character_,
+      TRUE ~ "altão"
+    )
+  ) %>% head
+
+# Juntar dados
+
+#bind
+
+#rbind
+#cbind
+
+df_A = data.frame(A = c(1,2,3,4), B = c(5, 6, 3, 2))
+df_B = data.frame(A = c(12,22,32,42), B = c(7, 5, 3, 2))
+
+rbind(df_A, df_B)
+
+
+df_A = data.frame(A = c(1,2,3,4), B = c(5, 6, 3, 2))
+df_B = data.frame(A = c(12,22,32,42), C = c(7, 5, 3, 2))
+
+bind_rows(df_A, df_B)
+
+
+df_A = data.frame(A = c(1,2,3,4))
+df_B = data.frame(B = c(12,22,32,42))
+
+cbind(df_A, df_B)
+
+
+df_A = data.frame(A = c(1,2,3,4))
+df_B = data.frame(B = c(12,22,32))
+
+cbind(df_A, df_B)
+bind_cols(df_A, df_B) # checar o bind_cols()
+
+# outras funçoes
 
 #? Vamos falar de JOIN
 
@@ -345,6 +459,23 @@ df_means
 #? vamos excluir os grupos que começam com "g"
 #TODO
 
+
+df_means %>% 
+  filter(grepl("^g", type)) #REGEX
+
+df_means %>% 
+  filter(grepl("g$", type)) #REGEX
+
+df_means %>% 
+  filter(grepl(".+g.+", type)) #REGEX
+
+df_means %>% 
+  filter(grepl(".+g.*", type)) #REGEX
+
+df_means <- df_means %>% 
+  filter(!grepl("^g", type))
+
+df_means
 #? vamos adicionar um grupo que não existe
 
 novo_grupo <- data.frame(
@@ -354,20 +485,49 @@ novo_grupo <- data.frame(
 )
 
 #TODO adicionar o grupo
+df_means <- rbind(df_means, novo_grupo)
 
 #? full_join
 #TODO
 
+# full -> manter tudo de todos
+df <- full_join(dados, df_means, by = "type")
+View(df)
 #? inner_join
 #TODO
-
+df <- inner_join(dados, df_means, by = "type")
+View(df)
 #? left_join
 #TODO
-
+df <- left_join(dados, df_means, by = "type")
+View(df)
 #? right_join
 #TODO
+df <- right_join(dados, df_means, by = "type")
+View(df)
 
 
+# SINTAXE
+names(dados)
+
+df_means <- dados %>%
+  group_by(type, secundary.type) %>%
+  summarise(
+    media_h = mean(height),
+    media_w = mean(weight)
+  )
+
+df_means
+
+
+df <- right_join(dados, df_means, by = c("type", "secundary.type"))
+View(df)
+
+df_means <- df_means %>% rename(height = media_h)
+
+## checar se existe ou
+df <- right_join(dados, df_means, by = c("type" = "type2", "secundary.type" = "secundary.type"))
+View(df)
 
 #? vamos adicionar um grupo que JÁ existe
 
