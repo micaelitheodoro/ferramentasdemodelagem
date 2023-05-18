@@ -13,7 +13,7 @@ library(stringr)
 
 #? Vamos começar com os dados de pokemon
 #? https://www.kaggle.com/datasets/igorcoelho24/pokemon-all-generations/versions/1?resource=download
-dados <- read.csv("Dados/Pokemon_full.csv")
+dados <- read.csv("R/Dados/Pokemon_full.csv")
 head(dados) #? vê as primeiras linhas de dados
 #dados <- read.csv("D:/Aulas/ferramentasdemodelagem/R/Dados/Pokemon_full.csv")
 #? A biblioteca dplyr possui o operador "pipe"
@@ -487,6 +487,11 @@ novo_grupo <- data.frame(
 #TODO adicionar o grupo
 df_means <- rbind(df_means, novo_grupo)
 
+### BOA Prática
+
+dados <- dados %>% 
+  mutate_if(is.character, function(x) trimws(x,"both"))
+
 #? full_join
 #TODO
 
@@ -505,6 +510,10 @@ View(df)
 #TODO
 df <- right_join(dados, df_means, by = "type")
 View(df)
+
+dados %>% 
+  left_join(df_means, by = "type") %>% 
+  left_join(df_means, by = "type") %>% View
 
 
 # SINTAXE
@@ -537,10 +546,17 @@ novo_grupo <- data.frame(
     media_w = 800
 )
 
+
 #TODO adicionar o grupo
+df_means <- rbind(df_means, novo_grupo)
 
 #? left_join
 #TODO
+df <- left_join(dados, df_means, by = "type")
+View(df)
+df %>% 
+  filter(type == "bug") %>%  head(15)
+df %>% tail()
 
 #? right_join
 #TODO
@@ -554,18 +570,61 @@ library(tidyr)
 
 #? baixado de https://livro.curso-r.com/
 
-dados <- readr::read_rds("Dados/imdb.rds")
-
+dados <- readr::read_rds("R/Dados/imdb.rds")
+View(dados)
 head(dados)
 names(dados)
+
+df <- dados %>% 
+  select(titulo, orcamento, receita, receita_eua)
+df
+
+# um gráfico com 10 primeiros filmes
+# barras
+# cada barra vem de uma coluna e aparece com uma cor diferente
 
 #TODO checar se cada filme tem apenas um genero associado
 
 #? Pivoteamento
 
-#? pivot_wider
-
 #? pivot_longer
+
+df_long <- df %>%
+  slice(1:10) %>% 
+  tidyr::pivot_longer(2:4, values_to = Valor, names_to = "Tipo de Valor")
+
+df %>%
+  slice(1:10) %>% 
+  tidyr::pivot_longer(2:4, values_to = "Valor", names_to = "Tipo de Valor")
+
+
+
+
+View(df %>% slice(1:10))
+View(df_long)
+
+# carregar
+library(ggplot2)
+
+ggplot()+
+  geom_col(data = df_long, aes(x = titulo, y = Valor, fill = `Tipo de Valor`),
+            position = position_dodge2()
+           )+
+  theme_bw()+
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1.0)
+  )
+
+
+
+## Pivot wider
+df_long %>% 
+  tidyr::pivot_wider(names_from = `Tipo de Valor`, values_from = Valor)
+
+# correlação cor()
+
+# Calcular correlação do conjunto inteiro entre as variáveis
+
 
 
 #? Emissões de ar
