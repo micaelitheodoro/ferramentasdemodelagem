@@ -10,7 +10,7 @@ library(dplyr)
 #? E outras bibliotecas que serão úteis
 library(lubridate)
 library(stringr)
-
+library(ggplot2)
 #? Vamos começar com os dados de pokemon
 #? https://www.kaggle.com/datasets/igorcoelho24/pokemon-all-generations/versions/1?resource=download
 dados <- read.csv("Dados/Pokemon_full.csv")
@@ -151,13 +151,18 @@ dados %>%
   mutate(scale(height))%>%
 View
 #Usando a função zscore direto
-dados %>% 
+df<-dados %>% 
   group_by(type) %>% 
-  mutate(across(where(is.numeric)),
-    Zscore = 
-      (height - mean(height)) / sd(height)) %>% 
+  mutate(
+    Zscore1 = 
+      (height - mean(height)) / sd(height),
+  Zscore2 = 
+  (weight - mean(weight)) / sd(weight)) %>%   
   View
-  
+
+ggplot(df)+
+  geom_density(aes(x = zscore1, color = type))+
+  theme_bw()
 
 #? Renomear colunas
 dados %>%
@@ -325,15 +330,20 @@ novo_grupo <- data.frame(
 #?#####################################################################
 #? TIDYR
 #?#####################################################################
-
+#Tarefa para 25/05/2023
 library(tidyr)
-
+library(readr)#não sei se tinha necessidade, mas o meu não foi sem isso
 #? baixado de https://livro.curso-r.com/
 
 dados <- readr::read_rds("Dados/imdb.rds")
+orçamento<-dados$orcamento
+receita<-dados$receita
+receita_eua<-dados$receita_eua
+#cbind(orçamento,receita,receita_eua)
 
-head(dados)
-names(dados)
+indice_correlação<-cor(cbind(orçamento,receita,receita_eua),use="pairwise.complete.obs")
+
+print(indice_correlação)
 
 #TODO checar se cada filme tem apenas um genero associado
 
