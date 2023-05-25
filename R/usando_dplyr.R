@@ -571,9 +571,11 @@ library(tidyr)
 #? baixado de https://livro.curso-r.com/
 
 dados <- readr::read_rds("R/Dados/imdb.rds")
+dados <- readr::read_rds("D:/Aulas/ferramentasdemodelagem/R/Dados/imdb.rds")
 View(dados)
 head(dados)
 names(dados)
+
 
 df <- dados %>% 
   select(titulo, orcamento, receita, receita_eua)
@@ -625,7 +627,10 @@ df_long %>%
 
 # Calcular correlação do conjunto inteiro entre as variáveis
 
-
+df %>%
+  select_if(is.numeric) %>%
+  filter(complete.cases(.)) %>% 
+  cor()
 
 #? Emissões de ar
 #? https://www.kaggle.com/datasets/ashishraut64/global-methane-emissions

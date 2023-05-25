@@ -1,0 +1,32 @@
+---
+title: "Teste"
+author: "Thomas Vilches"
+date: "2023-05-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("functions.R", encoding = "UTF-8")
+```
+
+Digitar qualquer coisa
+
+**Negrito**, *italico*, ~~taxado~~
+
+$\alpha$, $\beta$
+
+\[\frac{dV}{dt} = \alpha t\]
+
+> [fontsawesome](https://fontawesome.com/icons) `r fontawesome::fa("triangle-exclamation", fill = "orange")`
+
+o gráfico abaixo mostra a relação entre as duas variáveis
+
+```{r, echo=TRUE, fig.width=4.5, fig.height=4}
+plotar(c(1, 2, 3), c(2, 4, 6))
+
+
+plotar(c(1, 2, 3), c(5, 2, 9))
+
+```
+
