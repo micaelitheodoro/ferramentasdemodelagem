@@ -179,7 +179,7 @@ ggplot()+
   scale_fill_manual(values = c("blue", "red", "grey", "purple"), breaks = c("baixinho", "pequeno", "médio", "altão"), name = "Classe de tamanho")+
   scale_shape_manual(values = c(21,22,23,24), breaks = c("baixinho", "pequeno", "médio", "altão"), name = "Classe de tamanho")+
   scale_y_continuous(limits = c(0, 12000), expand = c(0,0), name = "Peso")+
-  scale_x_continuous(limits = c(0, 250), expand = c(0,0), name = "Altura")
+  scale_x_continuous(limits = c(-1, 251), expand = c(0,0), name = "Altura")
 #expand = c(0,0) "cola" o inicio dos eixos nos limites
 ```
 
@@ -213,12 +213,46 @@ ggplot()+
   scale_y_continuous(limits = c(0, 12000), expand = c(0,0), name = "Peso")+
   scale_x_continuous(limits = c(0, 250), expand = c(0,0), name = "Altura")+
   theme_clean()
+```
 
+
+```{r}
+library(rcartocolor)
+cores <- carto_pal(3, name = "Bold")
+ggplot()+
+  geom_density(data = dados, aes(x = height), color = cores[1])+
+  geom_density(data = dados, aes(x = weight), color = cores[2])+
+  scale_x_continuous(trans = "log10")+
+  labs(x = "Medida", y = "Densidade", color = "Tipo de medida")+
+  theme_bw()
 
 ggplot()+
-  geom_density(data = dados, aes(x = height))
+  geom_density(data = dados, aes(x = height, color = "Altura", fill = "Altura", linetype = "Altura"), alpha = 0.6)+
+  geom_density(data = dados, aes(x = weight, color = "Peso", fill = "Peso", linetype = "Peso"), alpha = 0.6)+
+  scale_x_continuous(trans = "log10")+
+  scale_color_manual(values = cores[1:2])+
+  scale_fill_manual(values = cores[1:2])+
+  labs(x = "Medida", y = "Densidade", color = "Tipo de medida", linetype = "Tipo de medida", fill = "Tipo de medida")+
+  theme_bw()
+
+dados %>% head()
 
 ```
+
+```{r}
+dados %>%
+  select(Peso = weight, Altura = height) %>% 
+  tidyr::pivot_longer(cols = c(1,2), values_to = "Medida", names_to = "Tipo de medida") %>% 
+  ggplot()+
+  geom_density(aes(x = Medida, color = `Tipo de medida`, fill = `Tipo de medida`, linetype = `Tipo de medida`), alpha = 0.6)+
+  scale_x_continuous(trans = "log10")+
+  scale_color_manual(values = cores[1:2])+
+  scale_fill_manual(values = cores[1:2])+
+  labs(x = "Medida", y = "Densidade", color = "Tipo de medida", linetype = "Tipo de medida", fill = "Tipo de medida")+
+  theme_bw()
+  
+```
+
 
 ## Adicionando temas sobre temas
 
@@ -226,7 +260,7 @@ ggplot()+
 É possível adicionar uma camada de tema customizada que vai "sobrepor" o padrão
 
 
-```{r}
+```{r, fig.width=5}
 
 library(ggthemes)
 
@@ -237,10 +271,15 @@ ggplot()+
   scale_shape_manual(values = c(21,22,23,24), breaks = c("baixinho", "pequeno", "médio", "altão"), name = "Classe de tamanho")+
   scale_y_continuous(trans = "log10", limits = c(1, 12000), expand = c(0,0), name = "Peso")+
   scale_x_continuous(trans = "log10", limits = c(1, 250), expand = c(0,0), name = "Altura")+
+  labs(title = "Título que a Jéssica quer")+
   theme_clean()+
   theme(
-    axis.title = element_text(size = 18, face = "bold"),
-    axis.text = element_text(size = 14)
+    axis.text = element_text(size = 18),
+    axis.title = element_text(size = 20, face = "bold"),
+    plot.title = element_text(size = 25, face = "bold"),
+    legend.position = "bottom",
+    legend.text = element_text(size = 14),
+    legend.title = element_text(size = 16)
   )
 
 ```
@@ -262,7 +301,6 @@ dados %>%
 
 
 #grafico da média da altura e do peso
-
 
 dados %>%
   group_by(type) %>% 
@@ -287,7 +325,7 @@ dados %>%
 
 
 ```{r}
-
+## LIÇAO DIA 01/06
 
 df <- dados %>%
   group_by(type) %>% 
