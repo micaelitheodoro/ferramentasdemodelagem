@@ -352,15 +352,17 @@ df %>%
     sec.axis = sec_axis(~./fator, name="Média do altura"),
     expand = c(0,0)
   )+
-  scale_color_brewer(palette = "Set1")+
-  scale_fill_brewer(palette = "Set1")+
+  labs(x = "Tipo de pokemon")+
+  scale_color_brewer(palette = "Set1", labels = c("Média da altura", "Média do peso"), name = "Medida")+
+  scale_fill_brewer(palette = "Set1", labels = c("Média da altura", "Média do peso"), name = "Medida")+
   theme_bw()+
   theme(
     axis.title = element_text(size = 18, face = "bold"),
-    axis.text = element_text(size = 14)
+    axis.text.y = element_text(size = 14),
+    axis.text.x = element_text(size = 14, angle = 45, hjust = 1.0),
+    legend.title = element_text(size = 15, face = "bold")
   )
 
-# TODO arrumar
 
 ```
 
@@ -423,6 +425,30 @@ df
     axis.text.y = element_text(size = 14),
     axis.text.x = element_text(size = 14, angle = 45, hjust = 1.0)
   )
+  
+  
+  
+  ggplot(df)+
+    geom_col(aes(x = type, y = media, color = tipo, fill = tipo), position = position_dodge(1.0))+
+    geom_errorbar(aes(x = type, y = media, ymin = media, ymax = media+sd, group = tipo), position = position_dodge(1.0))+
+  scale_y_continuous(
+    
+    # Features of the first axis
+    name = "Média do peso",
+    
+    # Add a second axis and specify its features
+    sec.axis = sec_axis(~./fator, name="Média do altura"),
+    expand = c(0,0)
+  )+
+  scale_color_brewer(palette = "Set1")+
+  scale_fill_brewer(palette = "Set1")+
+  theme_bw()+
+  theme(
+    axis.title = element_text(size = 18, face = "bold"),
+    axis.text.y = element_text(size = 14),
+    axis.text.x = element_text(size = 14, angle = 45, hjust = 1.0)
+  )
+
 
 ```
 
@@ -475,7 +501,7 @@ dados2 <- dados %>%
 
 cores <- rcartocolor::carto_pal(12, "Bold")
 
-  ggplot()+
+  plotly::ggplotly(ggplot()+
     geom_jitter(data = dados2, aes(x = type, y = valor, color = tipo, group = tipo), position = position_dodge(1.0), alpha = 0.7)+
     geom_point(data = df, aes(x = type, y = media, group = tipo), position = position_dodge(1.0), size = 2)+
     geom_errorbar(data = df, aes(x = type, y = media, ymin = media-sd, ymax = media+sd, group = tipo), position = position_dodge(1.0), width = 0.3)+
@@ -494,7 +520,7 @@ cores <- rcartocolor::carto_pal(12, "Bold")
     axis.title = element_text(size = 18, face = "bold"),
     axis.text.y = element_text(size = 14),
     axis.text.x = element_text(size = 14, angle = 45, hjust = 1.0)
-  )
+  ))
 
 ```
 
@@ -503,3 +529,127 @@ cores <- rcartocolor::carto_pal(12, "Bold")
 ## Plots legais
 
 [Clique aqui](https://www.cedricscherer.com/2021/06/06/visualizing-distributions-with-raincloud-plots-and-how-to-create-them-with-ggplot2/)
+
+
+
+
+
+
+```{r}
+library(tidyverse)
+ 
+# Data
+a <- data.frame( x=rnorm(20000, 10, 1.9), y=rnorm(20000, 10, 1.2) )
+b <- data.frame( x=rnorm(20000, 14.5, 1.9), y=rnorm(20000, 14.5, 1.9) )
+c <- data.frame( x=rnorm(20000, 9.5, 1.9), y=rnorm(20000, 15.5, 1.9) )
+data <- bind_rows(a,b,c)
+
+
+ggplot(data)+
+  geom_density(aes(x = x), color = "blue")+
+  geom_density(aes(x = y), color = "red")
+
+```
+
+```{r}
+# Hexbin chart with default option
+ggplot(data, aes(x=x, y=y) ) +
+  geom_hex() +
+  theme_bw()
+ 
+# Bin size control + color palette
+ggplot(data, aes(x=x, y=y) ) +
+  geom_hex(bins = 70) +
+  scale_fill_continuous(type = "viridis") +
+  theme_bw()
+```
+
+
+```{r}
+
+# Dummy data
+x <- LETTERS[1:20]
+y <- paste0("var", seq(1,20))
+data <- expand.grid(X=x, Y=y)
+data$Z <- runif(400, 0, 5)
+
+
+# Bin size control + color palette
+ggplot(data, aes(x=X, y=Y, fill = Z) ) +
+  geom_tile() +
+  scale_fill_continuous(type = "viridis") +
+  theme_bw()
+
+
+```
+
+
+
+```{r}
+
+x <- seq(1, 30, 0.1)
+y <- seq(1, 30, 0.1)
+
+dados <- expand.grid(x, y)
+
+z <- function(x, y){
+  x^2+y^2
+}
+
+dados$z_final <- dados$Var1^2+dados$Var2^2
+
+z_final <- lapply(1:nrow(dados), function(k) z(dados[k,1], dados[k,2]))
+dados$z_final <- Reduce(c, z_final)
+
+
+# exemplo de lista
+lista <- list(1, "teste", c(1, 2, 3))
+lista[[1]]
+lista[[2]]
+lista[[3]]
+
+l <- list(c(1,2,3), c(4,5,6))
+lapply(l, sum)
+
+
+
+# Bin size control + color palette
+ggplot(dados, aes(x=Var1, y=Var2, fill = z_final) ) +
+  geom_tile() +
+  scale_x_continuous(expand = c(0,0))+
+  scale_y_continuous(expand = c(0,0))+
+  scale_fill_continuous(type = "viridis") +
+  theme_bw()
+
+
+```
+
+## Exemplo lapply
+
+
+```{r}
+f <- function(x) x^2
+
+f(2)
+f(3)
+
+x1 <- c(1, 2, 3)
+
+f(x1)
+
+## existem funções que nao rodam assim
+
+result <- c()
+
+for(i in 1:length(x1)){
+  result1 <- f(x1[i])
+  result <- c(result, result1)
+}
+
+
+result
+
+
+result <- lapply(x1, f) %>% Reduce(c, .) # vai usar os dados onde o ponto está
+```
+

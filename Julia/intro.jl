@@ -6,7 +6,6 @@
 #* do repositorio do doggodotjl
 #* https://github.com/julia4ta/tutorials/blob/master/Series%2006/Files/julia_cheatsheet.jl
 
-
 #? Motivação
 
 function check(x, v)
@@ -20,6 +19,8 @@ v = rand(1:10000, 100000000)
 
 @time check(23, v)
 
+v = [1; 2; 3; 4]
+check(x, v)
 
 # hello world
 println("Hello, World!")
@@ -338,3 +339,138 @@ p4 = scatter(x, y, title="Title 4", ms=5, ma=0.2);
 plot(p1, p2, p3, p4, layout=(2,2), legend=false)
 
 ## Functions and methods
+
+function my_add(x::Int64, y::Int64)
+
+    println("A soma dos números inteiros é:", x + y)
+
+end
+
+my_add(1, 2)
+
+function my_add(x::Float64, y::Float64)
+    println("A soma dos números reais é:", x + y)
+end
+
+function my_add(x, y)
+    println("A soma dos números quaiquer é:", x + y)
+end
+
+my_add(1, 2)
+my_add(1.0, 1.0)
+my_add(1, 1.0)
+
+
+
+
+function f(x, y)
+
+    x < y
+
+end
+
+
+
+f(3,3)
+
+f([2; 3], 3)
+
+[2; 3] .< 3
+
+map(k -> f(k, 3), [2; 3])
+
+
+
+
+
+######################################################################################
+# Estimando Π
+#####################################################################################
+
+
+# πR^2 = Ac
+# Circulo inscrito em um quadrado
+# sabemos que a área do quadrado é 4xR^2
+# Portanto Ac/Aq = π/4
+# Vamos usar simulações de monte carlo para fazer isso
+using Plots
+
+
+N = 1000000
+function calculate_pi(N)
+    r = 1
+    x = -r .+ (2*r) .* rand(N)
+    y = -r .+ (2*r) .* rand(N)
+    
+    result = x.^2 .+ y.^2 .< r
+    
+    π = 4*sum(result)/length(result)
+    π
+end
+
+
+calculate_pi(100000000)
+
+
+using Plots
+
+
+## paralelizando
+
+N = 1000000
+function run_sim()
+    r = 1
+    x = -r .+ (2*r) .* rand()
+    y = -r .+ (2*r) .* rand()
+    
+    result = x^2 + y^2 < r
+    result
+end
+
+
+
+@time teste = map(x-> run_sim(), 1:1000000)
+4*sum(teste)/length(teste)
+
+##
+using Distributed
+
+nprocs()
+addprocs(4)
+
+@time teste = pmap(x -> run_sim(), 1:1000000)
+4*sum(teste)/length(teste)
+
+# precisa adicionar em todos os processadores
+@everywhere function run_sim()
+    r = 1
+    x = -r .+ (2*r) .* rand()
+    y = -r .+ (2*r) .* rand()
+    
+    result = x^2 + y^2 < r
+    result
+end
+
+
+
+
+@everywhere function calculate_pi(N)
+    r = 1
+    x = -r .+ (2*r) .* rand(N)
+    y = -r .+ (2*r) .* rand(N)
+    
+    result = x.^2 .+ y.^2 .< r
+    
+    π = 4*sum(result)/length(result)
+    π
+end
+
+
+
+N = Int(1000000/nprocs())
+
+result = pmap(k-> calculate_pi(k), repeat([N], 10))
+
+mean(result)
+
+using StatsBase
