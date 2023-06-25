@@ -474,3 +474,129 @@ result = pmap(k-> calculate_pi(k), repeat([N], 10))
 mean(result)
 
 using StatsBase
+
+
+
+
+
+######################################################################################
+# ODE
+#####################################################################################
+
+
+
+using Plots, DifferentialEquations
+
+
+
+# vamos encontrar a solução da função de crescimento
+
+# f(u,t,p) = du/dt = u
+
+f(u, p, t) = u
+
+# definindo o problema
+
+u0 = [2.0]
+tspan = [0, 1000]
+prob = ODEProblem(f, u0, tspan)
+
+# resolvendo o problema
+sol = solve(prob, Tsit5())
+
+sol.u
+
+plot(sol)
+
+# mudando parametros
+
+
+f(u, p, t) = p[1]*u
+
+u0 = [2.0]
+tspan = [0, 1000]
+p = [2.0]
+prob = ODEProblem(f, u0, tspan, p)
+
+
+# resolvendo o problema
+sol = solve(prob, Tsit5())
+plot(sol)
+
+
+
+
+#### Logistica
+
+f(u, p, t) = p[1].*(1 .- u/p[2]).*u
+
+u0 = [2.0]
+tspan = [0, 20]
+p = [2.0, 1000]
+prob = ODEProblem(f, u0, tspan, p)
+
+
+# resolvendo o problema
+sol = solve(prob, Tsit5())
+plot(sol,
+    legend = false
+)
+
+
+### Sistema de equações diferenciais
+
+function f!(du, u, p, t)
+    # 
+    du[1] = p[1]*u[1] - p[2]*u[1]*u[2]
+    du[2] = p[3]*u[1]*u[2] - p[4]*u[2]
+    return du
+end
+
+
+u0 = [2.0, 4.0]
+tspan = [0, 10]
+p = [10.0, 2.0, 1.5, 5.0]
+
+prob = ODEProblem(f!, u0, tspan, p)
+
+sol = solve(prob,Tsit5())
+
+plot(sol)
+
+solucao = Matrix(hcat(sol.u...)')
+
+
+plot(sol.t, solucao)
+
+
+
+## dt necessario para RK
+sol = solve(prob,RKO65(), saveat = 1e-2, dt = 1e-2)
+#sol = solve(prob,Tsit5(), saveat = 1e-2)
+
+plot(sol)
+solucao = Matrix(hcat(sol.u...)')
+plot(sol.t, solucao)
+
+
+
+plot(solucao[:, 1], solucao[:, 2],
+    xaxis = "Presa",
+    yaxis = "Predador"
+)
+
+
+u0 = [5.0, 4.0]
+tspan = [0, 10]
+p = [10.0, 2.0, 1.5, 5.0]
+
+## dt necessario para RK
+prob = ODEProblem(f!, u0, tspan, p)
+sol = solve(prob,RKO65(), saveat = 1e-2, dt = 1e-2)
+solucao = Matrix(hcat(sol.u...)')
+
+
+plot!(solucao[:, 1], solucao[:, 2],
+    color = :orange,
+    legend = false
+)
