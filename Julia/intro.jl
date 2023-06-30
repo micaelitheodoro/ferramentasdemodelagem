@@ -69,7 +69,7 @@ z
 
 const d = 4
 d = 40
-# d = 40.0 will result in error
+d = 40.0 #will result in error
 
 #variable part 2
 i = 1
@@ -153,6 +153,8 @@ vector[2]
 vector[3] * 4
 length(vector)
 
+vector[end-1]
+
 # array part 2
 sum(vector)
 
@@ -164,6 +166,7 @@ vector
 
 # array part 4
 push!(vector, 4)
+# push(vector, 5)
 pop!(vector)
 vector
 matrix = [1 2 3; 4 5 6]
@@ -201,6 +204,7 @@ end
 x = 1
 y = 2
 x > y ? println("$x > $y") : println("$x <= $y")
+a = x > y ? 1 : 2
 
 x, y = y, x
 x > y ? println("$x > $y") : println("$x <= $y")
@@ -250,7 +254,34 @@ end
 function myadd(x, y)
     x + y
 end
+
 myadd(2, 3)
+
+
+## Functions and methods
+function my_add(x::Int64, y::Int64)
+    println("A soma dos números inteiros é:", x + y)
+end
+
+my_add(1, 2)
+# my_add(1.0, 2)
+
+function my_add(x::Float64, y::Float64)
+    println("A soma dos números reais é:", x + y)
+end
+
+my_add(1, 2)
+my_add(1.0, 2.0)
+my_add(1.0, 2)
+
+function my_add(x, y)
+    println("A soma dos números quaiquer é:", x + y)
+end
+
+my_add(1, 2)
+my_add(1.0, 1.0)
+my_add(1, 1.0)
+
 
 # anonymous function
 staff = [
@@ -272,6 +303,7 @@ using Plots
 
 iris = dataset("datasets", "iris")
 
+# iris$SepalLength
 iris.SepalLength
 names(iris)
 
@@ -291,6 +323,11 @@ scatter!(iris.SepalLength, iris.PetalWidth, label = "Petal width")
 
 using StatsBase
 using StatsPlots
+
+# macro
+#df 
+
+typeof(:teste)
 
 @df iris scatter(:SepalWidth, [:PetalWidth, :PetalLength],
     labels = ["Petal width" "Petal length"],
@@ -316,6 +353,11 @@ g(x) = x^2
 plot([f, g])
 
 
+v = [1, 2, 3]
+
+(v .+ 1) .* 2
+@. (v + 1) * 2
+
 # Combinando Plots
 x = range(0, 10, length=100)
 y1 = @. exp(-0.1x) * cos(4x)
@@ -338,37 +380,12 @@ p3 = scatter(x, y, ms=2, ma=0.5, xlabel="xlabel 3");
 p4 = scatter(x, y, title="Title 4", ms=5, ma=0.2);
 plot(p1, p2, p3, p4, layout=(2,2), legend=false)
 
-## Functions and methods
-
-function my_add(x::Int64, y::Int64)
-
-    println("A soma dos números inteiros é:", x + y)
-
-end
-
-my_add(1, 2)
-
-function my_add(x::Float64, y::Float64)
-    println("A soma dos números reais é:", x + y)
-end
-
-function my_add(x, y)
-    println("A soma dos números quaiquer é:", x + y)
-end
-
-my_add(1, 2)
-my_add(1.0, 1.0)
-my_add(1, 1.0)
-
-
-
 
 function f(x, y)
 
     x < y
 
 end
-
 
 
 f(3,3)
@@ -378,9 +395,7 @@ f([2; 3], 3)
 [2; 3] .< 3
 
 map(k -> f(k, 3), [2; 3])
-
-
-
+map(k -> f(k, 3), [5; 7; 6; 3])
 
 
 ######################################################################################
@@ -393,10 +408,22 @@ map(k -> f(k, 3), [2; 3])
 # sabemos que a área do quadrado é 4xR^2
 # Portanto Ac/Aq = π/4
 # Vamos usar simulações de monte carlo para fazer isso
+
+
+# Aq = 4R^2
+# Ac = πR^2
+# prob = Ac/Aq
+# prob = πR^2/4R^2
+# π = 4 prob
+# π = 4 N_circulo/N_total
+
+
 using Plots
 
 
-N = 1000000
+N = 1000000 # numero de pontos
+
+
 function calculate_pi(N)
     r = 1
     x = -r .+ (2*r) .* rand(N)
@@ -410,6 +437,7 @@ end
 
 
 calculate_pi(100000000)
+calculate_pi(10000000)
 
 
 using Plots
@@ -467,10 +495,11 @@ end
 
 
 
-N = Int(1000000/nprocs())
+N = Int(1000000/(nprocs()-1))
 
-result = pmap(k-> calculate_pi(k), repeat([N], 10))
+@time result = pmap(k-> calculate_pi(k), repeat([N], 4))
 
+using StatsBase
 mean(result)
 
 using StatsBase
@@ -483,11 +512,7 @@ using StatsBase
 # ODE
 #####################################################################################
 
-
-
 using Plots, DifferentialEquations
-
-
 
 # vamos encontrar a solução da função de crescimento
 
@@ -600,3 +625,31 @@ plot!(solucao[:, 1], solucao[:, 2],
     color = :orange,
     legend = false
 )
+
+
+#? Brincadeira
+
+function lorenz!(du,u,p,t)
+    du[1] = 10.0(u[2]-u[1])
+    du[2] = u[1]*(28.0-u[3]) - u[2]
+    du[3] = u[1]*u[2] - (8/3)*u[3]
+end
+   u0 = [1.0;0.0;0.0]
+   tspan = (0.0,100.0)
+   prob = ODEProblem(lorenz!,u0,tspan)
+   
+   # Test that it worked
+   using OrdinaryDiffEq
+   sol = solve(prob,Tsit5())
+   using Plots; plot(sol,vars=(1,2,3))
+
+
+   
+   u0 = [1.001;0.0;0.0]
+   tspan = (0.0,100.0)
+   prob = ODEProblem(lorenz!,u0,tspan)
+   
+   # Test that it worked
+   using OrdinaryDiffEq
+   sol = solve(prob,Tsit5())
+   using Plots; plot!(sol,vars=(1,2,3))

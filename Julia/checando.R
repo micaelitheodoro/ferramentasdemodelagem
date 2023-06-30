@@ -11,3 +11,29 @@ check(23, v)
 tictoc::toc()
 
 microbenchmark::microbenchmark(a = check(23, v), unit = "seconds", times = 20L)
+
+
+v = c("Name" = "blablabla")
+v["Name"]
+
+v  <- c(1 ,2 ,3)
+v[length(v)]
+
+
+# if(){
+
+# }else{
+#     if(){
+        
+#     }else{
+
+#     }
+# }
+
+my_add <- function(x, y){
+    x + y
+}
+
+
+
+v + 1
